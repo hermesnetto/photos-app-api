@@ -16,14 +16,19 @@ var types_1 = require("./types");
 var resolvers_1 = require("./resolvers");
 var db_1 = require("./db");
 var db = db_1.getDBInstance();
+var port = 4000;
 var server = new apollo_server_1.ApolloServer({
     typeDefs: types_1.typeDefs,
     resolvers: resolvers_1.resolvers,
-    context: function (c) {
-        return __assign(__assign({}, c), { db: db });
+    context: function (context) {
+        /**
+         * @TODO Add the right types for context
+         * @TODO Resolve n + 1 problem
+         */
+        return __assign(__assign({}, context), { db: db });
     }
 });
-server.listen().then(function (_a) {
+server.listen(port).then(function (_a) {
     var url = _a.url;
     console.log("\uD83D\uDE80  Server ready at " + url);
 });

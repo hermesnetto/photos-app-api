@@ -4,18 +4,20 @@ import { resolvers } from './resolvers';
 import { getDBInstance } from './db';
 
 const db = getDBInstance();
+const port = 4000;
 
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-  context: (c: any) => {
-    return {
-      ...c,
-      db
-    };
+  context: (context: any) => {
+    /**
+     * @TODO Add the right types for context
+     * @TODO Resolve n + 1 problem
+     */
+    return { ...context, db };
   }
 });
 
-server.listen().then(({ url }) => {
+server.listen(port).then(({ url }) => {
   console.log(`🚀  Server ready at ${url}`);
 });

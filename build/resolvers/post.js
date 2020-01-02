@@ -30,12 +30,6 @@ exports.postFieldResolvers = {
     }
 };
 exports.postResolvers = {
-    /** Gets all Posts */
-    posts: function (_root, _a, _b) {
-        var id = _a.id;
-        var db = _b.db;
-        return db.get(key).value();
-    },
     /** Gets a single Post by its id */
     post: function (_root, _a, _b) {
         var id = _a.id;
@@ -43,6 +37,21 @@ exports.postResolvers = {
         return db
             .get(key)
             .find({ id: id })
+            .value();
+    },
+    /** Gets all Posts */
+    posts: function (_root, _a, _b) {
+        var id = _a.id;
+        var db = _b.db;
+        return db.get(key).value();
+    },
+    /** Gets all Posts from a User */
+    postsByUser: function (_root, _a, _b) {
+        var userId = _a.userId;
+        var db = _b.db;
+        return db
+            .get(key)
+            .filter({ user_id: userId })
             .value();
     }
 };

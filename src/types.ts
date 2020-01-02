@@ -42,11 +42,12 @@ export const typeDefs = gql`
     picture(id: Int!): Picture
 
     # Post
-    posts: [Post]
     post(id: Int!): Post
+    posts: [Post]
+    postsByUser(userId: Int!): [Post]
 
     # Comment
     comment(id: Int!): Comment
-    commentsByPost(postId: Int): [Comment]
+    commentsByPost(postId: Int!): [Comment]
   }
 `;

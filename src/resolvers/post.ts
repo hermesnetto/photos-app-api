@@ -32,16 +32,24 @@ export const postFieldResolvers = {
 };
 
 export const postResolvers = {
-  /** Gets all Posts */
-  posts(_root: {}, { id }: GqlPost, { db }: Context): GqlPost[] {
-    return db.get(key).value();
-  },
-
   /** Gets a single Post by its id */
   post(_root: {}, { id }: GqlPost, { db }: Context): GqlPost {
     return db
       .get(key)
       .find({ id })
+      .value();
+  },
+
+  /** Gets all Posts */
+  posts(_root: {}, { id }: GqlPost, { db }: Context): GqlPost[] {
+    return db.get(key).value();
+  },
+
+  /** Gets all Posts from a User */
+  postsByUser(_root: {}, { userId }: { userId: number }, { db }: Context): GqlPost[] {
+    return db
+      .get(key)
+      .filter({ user_id: userId })
       .value();
   }
 };
