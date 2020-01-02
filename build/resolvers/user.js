@@ -1,16 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var picture_1 = require("./picture");
-var post_1 = require("./post");
 var key = 'users';
 exports.userFieldResolvers = {
     User: {
-        posts: function (user, _args, _a) {
-            var db = _a.db;
-            return user.posts_ids.map(function (postId) {
-                return post_1.postResolvers.post({}, { id: postId }, { db: db });
-            });
-        },
         friends: function (user, _args, _a) {
             var db = _a.db;
             return user.friends_ids.map(function (friendId) {

@@ -8,7 +8,6 @@ export interface User {
   name: string;
   description: string;
   profile_picture_id: number;
-  posts_ids: number[];
   friends_ids: number[];
 }
 
@@ -49,7 +48,6 @@ export interface GqlUser {
   name?: string;
   description?: string;
   profile_picture?: GqlPicture;
-  posts?: GqlPost[];
   friends?: GqlUser[];
 }
 

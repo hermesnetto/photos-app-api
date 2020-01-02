@@ -7,7 +7,6 @@ export const typeDefs = gql`
     name: String
     description: String
     profile_picture: Picture
-    posts: [Post]
     friends: [User]
   }
 

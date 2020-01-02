@@ -7,7 +7,6 @@
       "name": "Hermeto",
       "description": "Freelancer web dev",
       "profile_picture_id": 1,
-      "posts_ids": [1, 2],
       "friends_ids": [2]
     },
     {
@@ -17,7 +16,6 @@
       "name": "John",
       "description": "Lorem ipsum",
       "profile_picture_id": 1,
-      "posts_ids": [1, 2],
       "friends_ids": [1]
     }
   ],

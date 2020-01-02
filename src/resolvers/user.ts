@@ -1,18 +1,10 @@
-import { GqlPicture, Context, GqlUser, GqlPost, User } from '../models';
+import { GqlPicture, Context, GqlUser, User } from '../models';
 import { pictureResolvers } from './picture';
-import { postResolvers } from './post';
 
 const key = 'users';
 
 export const userFieldResolvers = {
   User: {
-    posts(user: User, _args: {}, { db }: Context): GqlPost[] {
-      return user.posts_ids.map(
-        (postId: number): GqlPost => {
-          return postResolvers.post({}, { id: postId }, { db });
-        }
-      );
-    },
     friends(user: User, _args: {}, { db }: Context): GqlUser[] {
       return user.friends_ids.map(
         (friendId: number): GqlUser => {
