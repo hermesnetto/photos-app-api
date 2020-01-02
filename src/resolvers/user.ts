@@ -29,7 +29,10 @@ export const userFieldResolvers = {
 export const userResolvers = {
   /** Gets a single User by its id */
   user(_root: {}, { id }: GqlUser, { db }: Context): GqlUser {
-    return db.get(key).value();
+    return db
+      .get(key)
+      .find({ id })
+      .value();
   },
 
   /** Gets all friends of a User */
