@@ -74,7 +74,7 @@ exports.userMutations = {
         db.get(key)
             .push(newUser)
             .write();
-        return getMutationResult(true, 'User succesfully creates', newUser);
+        return getMutationResult(true, 'User succesfully created!', newUser);
     },
     /** Updates a User */
     updateUser: function (_root, _a, ctx) {

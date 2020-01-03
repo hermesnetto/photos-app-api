@@ -92,7 +92,7 @@ export const userMutations = {
       .push(newUser)
       .write();
 
-    return getMutationResult(true, 'User succesfully creates', newUser);
+    return getMutationResult(true, 'User succesfully created!', newUser);
   },
 
   /** Updates a User */

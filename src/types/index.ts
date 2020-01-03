@@ -7,6 +7,7 @@ export const typeDefs = gql`
     name: String
     description: String
     profile_picture: Picture
+    posts: [Post]
     friends: [User]
   }
 
@@ -55,6 +56,11 @@ export const typeDefs = gql`
     addUser(input: AddUserInput): AddUserResponse
     updateUser(input: UpdateUserInput): UpdateUserResponse
     deleteUser(input: DeleteUserInput): DeleteUserResponse
+
+    # Picture
+    addPicture(input: AddPictureInput): AddPictureResponse
+    updatePicture(input: UpdatePictureInput): UpdatePictureResponse
+    deletePicture(input: DeletePictureInput): DeletePictureResponse
   }
 
   # Interfaces
@@ -83,6 +89,21 @@ export const typeDefs = gql`
     id: Int!
   }
 
+  input AddPictureInput {
+    source: String!
+    author_id: Int!
+  }
+
+  input UpdatePictureInput {
+    id: Int!
+    source: String
+  }
+
+  input DeletePictureInput {
+    id: Int!
+  }
+
+  # Responses
   type AddUserResponse implements MutationResponse {
     success: Boolean!
     message: String!
@@ -96,6 +117,23 @@ export const typeDefs = gql`
   }
 
   type DeleteUserResponse implements MutationResponse {
+    success: Boolean!
+    message: String!
+  }
+
+  type AddPictureResponse implements MutationResponse {
+    success: Boolean!
+    message: String!
+    data: Picture
+  }
+
+  type UpdatePictureResponse implements MutationResponse {
+    success: Boolean!
+    message: String!
+    data: Picture
+  }
+
+  type DeletePictureResponse implements MutationResponse {
     success: Boolean!
     message: String!
   }

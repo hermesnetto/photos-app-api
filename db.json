@@ -1,6 +1,22 @@
 {
-  "users": [],
+  "users": [
+    {
+      "email": "john@mail.com",
+      "password": "123",
+      "name": "Batima",
+      "id": 1,
+      "description": "",
+      "profile_picture_id": null,
+      "friends_ids": []
+    }
+  ],
   "posts": [],
-  "pictures": [],
+  "pictures": [
+    {
+      "source": "newpic.jpg",
+      "id": 2,
+      "user_id": 1
+    }
+  ],
   "comments": []
 }

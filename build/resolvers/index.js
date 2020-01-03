@@ -15,7 +15,7 @@ var user_1 = require("./user");
 var picture_1 = require("./picture");
 var post_1 = require("./post");
 var comment_1 = require("./comment");
-exports.resolvers = __assign(__assign(__assign(__assign({ Query: __assign(__assign(__assign(__assign({}, user_1.userQueries), picture_1.pictureQueries), post_1.postQueries), comment_1.commentQueries), Mutation: __assign({}, user_1.userMutations), MutationResponse: {
+exports.resolvers = __assign(__assign(__assign(__assign({ Query: __assign(__assign(__assign(__assign({}, user_1.userQueries), picture_1.pictureQueries), post_1.postQueries), comment_1.commentQueries), Mutation: __assign(__assign({}, user_1.userMutations), picture_1.pictureMutations), MutationResponse: {
         __resolveType: function () {
             return null;
         }

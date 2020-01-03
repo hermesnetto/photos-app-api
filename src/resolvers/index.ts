@@ -1,5 +1,5 @@
-import { userQueries, userMutations, userFields } from './user';
-import { pictureQueries, pictureFields } from './picture';
+import { userQueries, userFields, userMutations } from './user';
+import { pictureQueries, pictureFields, pictureMutations } from './picture';
 import { postQueries, postFields } from './post';
 import { commentQueries, commentFields } from './comment';
 
@@ -11,7 +11,8 @@ export const resolvers = {
     ...commentQueries
   },
   Mutation: {
-    ...userMutations
+    ...userMutations,
+    ...pictureMutations
   },
   MutationResponse: {
     __resolveType(): null {
