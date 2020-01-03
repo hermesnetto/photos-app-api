@@ -15,4 +15,8 @@ var user_1 = require("./user");
 var picture_1 = require("./picture");
 var post_1 = require("./post");
 var comment_1 = require("./comment");
-exports.resolvers = __assign(__assign(__assign(__assign({ Query: __assign(__assign(__assign(__assign({}, user_1.userResolvers), picture_1.pictureResolvers), post_1.postResolvers), comment_1.commentResolvers) }, user_1.userFieldResolvers), picture_1.pictureFieldResolvers), post_1.postFieldResolvers), comment_1.commentFieldResolvers);
+exports.resolvers = __assign(__assign(__assign(__assign({ Query: __assign(__assign(__assign(__assign({}, user_1.userQueries), picture_1.pictureQueries), post_1.postQueries), comment_1.commentQueries), Mutation: __assign({}, user_1.userMutations), MutationResponse: {
+        __resolveType: function () {
+            return null;
+        }
+    } }, user_1.userFields), picture_1.pictureFields), post_1.postFields), comment_1.commentFields);

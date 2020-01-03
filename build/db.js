@@ -8,7 +8,12 @@ var FileSync_1 = __importDefault(require("lowdb/adapters/FileSync"));
 exports.getDBInstance = function () {
     var adapter = new FileSync_1.default('db.json');
     var db = lowdb_1.default(adapter);
-    // const defaultDb = { users: [], posts: [], pictures: [], comments: [] };
-    // db.defaults(defaultDb).write();
+    var defaultDb = {
+        users: [],
+        posts: [],
+        pictures: [],
+        comments: []
+    };
+    db.defaults(defaultDb).write();
     return db;
 };

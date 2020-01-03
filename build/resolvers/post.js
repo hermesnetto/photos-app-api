@@ -1,35 +1,32 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+var models_1 = require("../models");
 var picture_1 = require("./picture");
 var user_1 = require("./user");
 var comment_1 = require("./comment");
-var key = 'posts';
-exports.postFieldResolvers = {
+var key = models_1.MODEL_TYPES.Posts;
+exports.postFields = {
     Post: {
-        picture: function (post, _args, _a) {
-            var db = _a.db;
-            return picture_1.pictureResolvers.picture({}, { id: post.picture_id }, { db: db });
+        picture: function (post, _args, ctx) {
+            return picture_1.pictureQueries.picture({}, { id: post.picture_id }, ctx);
         },
-        author: function (post, _args, _a) {
-            var db = _a.db;
-            return user_1.userResolvers.user({}, { id: post.user_id }, { db: db });
+        author: function (post, _args, ctx) {
+            return user_1.userQueries.user({}, { id: post.user_id }, ctx);
         },
-        likes: function (post, _args, _a) {
-            var db = _a.db;
+        likes: function (post, _args, ctx) {
             return post.likes_ids.map(function (id) {
-                return user_1.userResolvers.user({}, { id: id }, { db: db });
+                return user_1.userQueries.user({}, { id: id }, ctx);
             });
         },
-        comments: function (post, _args, _a) {
-            var db = _a.db;
+        comments: function (post, _args, ctx) {
             return post.comments_ids.map(function (id) {
-                console.log(comment_1.commentResolvers.comment({}, { id: id }, { db: db }));
-                return comment_1.commentResolvers.comment({}, { id: id }, { db: db });
+                console.log(comment_1.commentQueries.comment({}, { id: id }, ctx));
+                return comment_1.commentQueries.comment({}, { id: id }, ctx);
             });
         }
     }
 };
-exports.postResolvers = {
+exports.postQueries = {
     /** Gets a single Post by its id */
     post: function (_root, _a, _b) {
         var id = _a.id;

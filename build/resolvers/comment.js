@@ -3,19 +3,17 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var user_1 = require("./user");
 var post_1 = require("./post");
 var key = 'comments';
-exports.commentFieldResolvers = {
+exports.commentFields = {
     Comment: {
-        author: function (comment, _args, _a) {
-            var db = _a.db;
-            return user_1.userResolvers.user({}, { id: comment.user_id }, { db: db });
+        author: function (comment, _args, ctx) {
+            return user_1.userQueries.user({}, { id: comment.user_id }, ctx);
         },
-        post: function (comment, _args, _a) {
-            var db = _a.db;
-            return post_1.postResolvers.post({}, { id: comment.post_id }, { db: db });
+        post: function (comment, _args, ctx) {
+            return post_1.postQueries.post({}, { id: comment.post_id }, ctx);
         }
     }
 };
-exports.commentResolvers = {
+exports.commentQueries = {
     /** Gets a single Comment by its id */
     comment: function (_root, _a, _b) {
         var id = _a.id;

@@ -1,17 +1,25 @@
-import { userResolvers, userFieldResolvers } from './user';
-import { pictureResolvers, pictureFieldResolvers } from './picture';
-import { postResolvers, postFieldResolvers } from './post';
-import { commentResolvers, commentFieldResolvers } from './comment';
+import { userQueries, userMutations, userFields } from './user';
+import { pictureQueries, pictureFields } from './picture';
+import { postQueries, postFields } from './post';
+import { commentQueries, commentFields } from './comment';
 
 export const resolvers = {
   Query: {
-    ...userResolvers,
-    ...pictureResolvers,
-    ...postResolvers,
-    ...commentResolvers
+    ...userQueries,
+    ...pictureQueries,
+    ...postQueries,
+    ...commentQueries
   },
-  ...userFieldResolvers,
-  ...pictureFieldResolvers,
-  ...postFieldResolvers,
-  ...commentFieldResolvers
+  Mutation: {
+    ...userMutations
+  },
+  MutationResponse: {
+    __resolveType(): null {
+      return null;
+    }
+  },
+  ...userFields,
+  ...pictureFields,
+  ...postFields,
+  ...commentFields
 };

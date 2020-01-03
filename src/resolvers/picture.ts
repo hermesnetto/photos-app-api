@@ -1,17 +1,17 @@
-import { Picture, GqlPicture, Context, GqlUser } from '../models';
-import { userResolvers } from './user';
+import { Picture, GqlPicture, Context, GqlUser, MODEL_TYPES } from '../models';
+import { userQueries } from './user';
 
-const key = 'pictures';
+const key = MODEL_TYPES.Pictures;
 
-export const pictureFieldResolvers = {
+export const pictureFields = {
   Picture: {
-    author(picture: Picture, _args: {}, { db }: Context): GqlUser {
-      return userResolvers.user({}, { id: picture.user_id }, { db });
+    author(picture: Picture, _args: {}, ctx: Context): GqlUser {
+      return userQueries.user({}, { id: picture.user_id }, ctx);
     }
   }
 };
 
-export const pictureResolvers = {
+export const pictureQueries = {
   /** Gets a single Picture by its id */
   picture(_root: {}, { id }: GqlPicture, { db }: Context): GqlPicture {
     return db

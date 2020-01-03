@@ -1,13 +1,20 @@
 import { LowdbSync } from 'lowdb';
 
 /** Database related types */
+export enum MODEL_TYPES {
+  Users = 'users',
+  Pictures = 'pictures',
+  Posts = 'posts',
+  Comments = 'comments'
+}
+
 export interface User {
   id: number;
-  email?: string;
-  password?: string;
+  email: string;
+  password: string;
   name: string;
   description: string;
-  profile_picture_id: number;
+  profile_picture_id: number | null;
   friends_ids: number[];
 }
 
@@ -44,6 +51,7 @@ export interface DBSchema {
 export interface GqlUser {
   id?: number;
   email?: string;
+  password?: string;
   user?: User;
   name?: string;
   description?: string;
@@ -75,6 +83,14 @@ export interface GqlComment {
 
 export interface Context {
   db: LowdbSync<DBSchema>;
+  generateId: (type: MODEL_TYPES) => number;
+  getMutationResult<T>(status: boolean, message: string, data: T): MutationResult<T>;
 }
 
 export type DB = LowdbSync<DBSchema>;
+
+export interface MutationResult<T> {
+  status: boolean;
+  message: string;
+  data: T;
+}

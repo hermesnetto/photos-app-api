@@ -1,21 +1,21 @@
 import { Comment, Context, GqlUser, GqlComment, GqlPost } from '../models';
-import { userResolvers } from './user';
-import { postResolvers } from './post';
+import { userQueries } from './user';
+import { postQueries } from './post';
 
 const key = 'comments';
 
-export const commentFieldResolvers = {
+export const commentFields = {
   Comment: {
-    author(comment: Comment, _args: {}, { db }: Context): GqlUser {
-      return userResolvers.user({}, { id: comment.user_id }, { db });
+    author(comment: Comment, _args: {}, ctx: Context): GqlUser {
+      return userQueries.user({}, { id: comment.user_id }, ctx);
     },
-    post(comment: Comment, _args: {}, { db }: Context): GqlPost {
-      return postResolvers.post({}, { id: comment.post_id }, { db });
+    post(comment: Comment, _args: {}, ctx: Context): GqlPost {
+      return postQueries.post({}, { id: comment.post_id }, ctx);
     }
   }
 };
 
-export const commentResolvers = {
+export const commentQueries = {
   /** Gets a single Comment by its id */
   comment(_root: {}, { id }: GqlComment, { db }: Context): GqlComment {
     return db
