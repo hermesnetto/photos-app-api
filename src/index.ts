@@ -17,11 +17,14 @@ const server = new ApolloServer({
      */
     return {
       ...context,
+      /**
+       * @TODO Implement better function to generate the ID's
+       */
       generateId(type: MODEL_TYPES): number {
         return db.get(type).value().length + 1;
       },
-      getMutationResult<T>(status: boolean, message: string, data: T): MutationResult<T> {
-        return { status, message, data };
+      mutationResult<T>(success: boolean, message: string, data: T): MutationResult<T> {
+        return { success, message, data };
       },
       db
     };

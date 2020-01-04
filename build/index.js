@@ -25,11 +25,15 @@ var server = new apollo_server_1.ApolloServer({
          * @TODO Add the right types for context
          * @TODO Resolve n + 1 problem
          */
-        return __assign(__assign({}, context), { generateId: function (type) {
+        return __assign(__assign({}, context), { 
+            /**
+             * @TODO Implement better function to generate the ID's
+             */
+            generateId: function (type) {
                 return db.get(type).value().length + 1;
             },
-            getMutationResult: function (status, message, data) {
-                return { status: status, message: message, data: data };
+            mutationResult: function (success, message, data) {
+                return { success: success, message: message, data: data };
             },
             db: db });
     }

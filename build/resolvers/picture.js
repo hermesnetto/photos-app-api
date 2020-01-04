@@ -23,12 +23,11 @@ exports.pictureFields = {
 };
 exports.pictureQueries = {
     /** Gets a single Picture by its id */
-    picture: function (_root, _a, _b) {
-        var id = _a.id;
-        var db = _b.db;
+    picture: function (_root, pic, _a) {
+        var db = _a.db;
         return db
             .get(key)
-            .find({ id: id })
+            .find(pic)
             .value();
     }
 };

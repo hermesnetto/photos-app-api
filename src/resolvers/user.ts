@@ -1,9 +1,7 @@
-import { GqlPicture, Context, GqlUser, User, MODEL_TYPES, MutationResult } from '../models';
-import { pictureQueries } from './picture';
+import { Context, MODEL_TYPES, MutationResult, DBUser, GqlUser, GqlMedia } from '../models';
+import { mediaQueries } from './media';
 
-const key = MODEL_TYPES.Users;
-
-export interface CreateUserInput {
+interface CreateUserParams {
   input: {
     email: string;
     password: string;
@@ -11,119 +9,85 @@ export interface CreateUserInput {
   };
 }
 
-export interface UpdateUserInput {
+interface UpdateUserParams {
   input: {
     id: number;
-    email?: string;
-    password?: string;
-    name?: string;
-    description?: string;
-    profile_picture_id?: number | null;
+    name: string;
+    mediaSource: string;
   };
 }
 
-export interface DeleteUserInput {
-  input: {
-    id: number;
-  };
+interface UpdateDBUserParams {
+  name: string;
+  media_id?: number;
+}
+
+interface GetUserParams {
+  id: number;
 }
 
 export const userFields = {
   User: {
-    friends(user: User, _args: {}, ctx: Context): GqlUser[] {
-      return user.friends_ids.map(
-        (friendId: number): GqlUser => {
-          return userQueries.user({}, { id: friendId }, ctx);
-        }
-      );
-    },
-
-    profile_picture(user: User, _args: {}, ctx: Context): GqlPicture {
-      if (!user.profile_picture_id) {
-        return {};
-      }
-
-      return pictureQueries.picture({}, { id: user.profile_picture_id }, ctx);
+    media(user: DBUser, _args: {}, ctx: Context): GqlMedia | {} {
+      if (!user.media_id) return {};
+      return mediaQueries.media({}, { id: user.media_id }, ctx);
     }
   }
 };
 
 export const userQueries = {
-  /** Gets a single User by its id */
-  user(_root: {}, { id }: GqlUser, { db }: Context): GqlUser {
+  user(_: {}, { id }: GetUserParams, { db }: Context): GqlUser {
     return db
-      .get(key)
+      .get(MODEL_TYPES.User)
       .find({ id })
-      .value();
-  },
-
-  /** Gets all friends of a User */
-  userFriends(_root: {}, { userId }: { userId: number }, { db }: Context): GqlUser[] {
-    const user = db
-      .get(key)
-      .find({ id: userId })
-      .value();
-
-    return db
-      .get(key)
-      .filter(({ id }: User): boolean => {
-        return user.friends_ids.includes(id);
-      })
       .value();
   }
 };
 
 export const userMutations = {
-  /** Creates a new User */
-  addUser(_root: {}, { input }: CreateUserInput, ctx: Context): MutationResult<GqlUser> {
-    const { db, generateId, getMutationResult } = ctx;
+  createUser(_: {}, { input }: CreateUserParams, ctx: Context): MutationResult<GqlUser> {
+    const { db, mutationResult, generateId } = ctx;
     const { email, password, name } = input;
-    const newUser = {
-      email,
-      password,
-      name,
-      id: generateId(key),
-      description: '',
-      profile_picture_id: null,
-      friends_ids: []
-    };
 
-    db.get(key)
-      .push(newUser)
+    const userData = { id: generateId(MODEL_TYPES.User), email, password, name, media_id: null };
+
+    db.get(MODEL_TYPES.User)
+      .push(userData)
       .write();
 
-    return getMutationResult(true, 'User succesfully created!', newUser);
+    delete userData.password;
+
+    return mutationResult(true, 'User successfully created!', userData);
   },
 
-  /** Updates a User */
-  updateUser(_root: {}, { input }: UpdateUserInput, ctx: Context): MutationResult<GqlUser> {
-    const { db, getMutationResult } = ctx;
-    const { id, ...data } = input;
-    const user = db.get(key).find({ id });
+  updateUser(_: {}, { input }: UpdateUserParams, ctx: Context): MutationResult<GqlUser> {
+    const { db, mutationResult, generateId } = ctx;
+    const { id, name, mediaSource } = input;
 
-    if (!user.value()) {
-      return getMutationResult(false, 'User not found!', {});
+    const user = db.get(MODEL_TYPES.User).find({ id });
+    const userData: UpdateDBUserParams = { name };
+
+    if (mediaSource) {
+      const currentMediaId = user.value().media_id;
+
+      if (currentMediaId) {
+        db.get(MODEL_TYPES.Media)
+          .find()
+          .assign({ source: mediaSource })
+          .write();
+      } else {
+        const mediaId = generateId(MODEL_TYPES.Media);
+
+        db.get(MODEL_TYPES.Media)
+          .push({ id: mediaId, user_id: id, source: mediaSource })
+          .write();
+
+        userData.media_id = mediaId;
+      }
     }
 
-    const updatedUser = user.assign(data);
-    updatedUser.write();
+    user.assign(userData).write();
 
-    return getMutationResult(true, 'User succesfully updated!', updatedUser.value());
-  },
-
-  /** Deletes a User */
-  deleteUser(_root: {}, { input }: DeleteUserInput, ctx: Context): MutationResult<{}> {
-    const { db, getMutationResult } = ctx;
-    const { id } = input;
-
-    const users = db.get(key);
-
-    if (!users.find({ id }).value()) {
-      return getMutationResult(false, 'User not found!', {});
-    }
-
-    users.remove({ id }).write();
-
-    return getMutationResult(true, 'User succesfully deleted!', {});
+    return mutationResult(true, 'User successfully updated!', user.value());
   }
 };

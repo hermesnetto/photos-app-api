@@ -1,6 +1,6 @@
 import low, { LowdbSync } from 'lowdb';
 import FileSync from 'lowdb/adapters/FileSync';
-import { User, DBSchema } from './models';
+import { DBSchema } from './models';
 
 export const getDBInstance = (): LowdbSync<DBSchema> => {
   const adapter = new FileSync('db.json');
@@ -8,8 +8,9 @@ export const getDBInstance = (): LowdbSync<DBSchema> => {
   const defaultDb = {
     users: [],
     posts: [],
-    pictures: [],
-    comments: []
+    medias: [],
+    comments: [],
+    postMedias: []
   };
 
   db.defaults(defaultDb).write();

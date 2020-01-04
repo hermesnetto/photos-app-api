@@ -3,64 +3,58 @@ import { gql } from 'apollo-server';
 export const typeDefs = gql`
   type User {
     id: Int
-    email: String
+    email: String!
     name: String
-    description: String
-    profile_picture: Picture
-    posts: [Post]
-    friends: [User]
+    media: Media
   }
 
-  type Picture {
+  type Media {
     id: Int
-    source: String
-    author: User
+    source: String!
+    author: User!
   }
 
   type Post {
     id: Int
-    picture: Picture
-    author: User
-    likes: [User]
-    comments: [Comment]
     title: String
+    author: User!
+    medias: [Media]!
+    comments: [Comment]
   }
 
   type Comment {
     id: Int
-    body: String
-    post: Post
-    author: User
+    body: String!
+    author: User!
   }
 
   type Query {
-    # User
+    # user
     user(id: Int!): User
-    userFriends(userId: Int!): [User]
 
-    # Picture
-    picture(id: Int!): Picture
+    # media
+    media(id: Int!): Media
 
-    # Post
+    # post
     post(id: Int!): Post
-    posts: [Post]
-    postsByUser(userId: Int!): [Post]
+    postsByUser(authorId: Int!): [Post]
 
-    # Comment
-    comment(id: Int!): Comment
+    # comment
     commentsByPost(postId: Int!): [Comment]
   }
 
   type Mutation {
-    # User
-    addUser(input: AddUserInput): AddUserResponse
-    updateUser(input: UpdateUserInput): UpdateUserResponse
-    deleteUser(input: DeleteUserInput): DeleteUserResponse
+    # user
+    createUser(input: CreateUserInput): CrudUserResponse
+    updateUser(input: UpdateUserInput): CrudUserResponse
 
-    # Picture
-    addPicture(input: AddPictureInput): AddPictureResponse
-    updatePicture(input: UpdatePictureInput): UpdatePictureResponse
-    deletePicture(input: DeletePictureInput): DeletePictureResponse
+    # post
+    createPost(input: CreatePostInput): CrudPostResponse
+    deletePost(input: DeleteDefaultInput): DeleteDefaultResponse
+
+    # comment
+    createComment(input: CreateCommentInput): CrudCommentResponse
+    deleteComment(input: DeleteDefaultInput): DeleteDefaultResponse
   }
 
   # Interfaces
@@ -70,71 +64,61 @@ export const typeDefs = gql`
   }
 
   # Inputs
-  input AddUserInput {
+  input DeleteDefaultInput {
+    id: Int!
+  }
+
+  input CreateUserInput {
     email: String!
-    password: String!
     name: String!
+    password: String!
   }
 
   input UpdateUserInput {
     id: Int!
-    email: String
-    password: String
     name: String
-    description: String
-    profile_picture_id: Int
+    mediaSource: String
   }
 
-  input DeleteUserInput {
+  input CreatePostInput {
+    title: String
+    user_id: Int!
+    mediasSource: [String]!
+  }
+
+  input UpdatePostInput {
     id: Int!
+    title: String
+    mediasSource: [String]
   }
 
-  input AddPictureInput {
-    source: String!
-    author_id: Int!
-  }
-
-  input UpdatePictureInput {
-    id: Int!
-    source: String
-  }
-
-  input DeletePictureInput {
-    id: Int!
+  input CreateCommentInput {
+    body: String
+    user_id: Int!
+    post_id: Int!
   }
 
   # Responses
-  type AddUserResponse implements MutationResponse {
-    success: Boolean!
-    message: String!
-    data: User
-  }
-
-  type UpdateUserResponse implements MutationResponse {
-    success: Boolean!
-    message: String!
-    data: User
-  }
-
-  type DeleteUserResponse implements MutationResponse {
+  type DeleteDefaultResponse implements MutationResponse {
     success: Boolean!
     message: String!
   }
 
-  type AddPictureResponse implements MutationResponse {
+  type CrudUserResponse implements MutationResponse {
     success: Boolean!
     message: String!
-    data: Picture
+    data: User!
   }
 
-  type UpdatePictureResponse implements MutationResponse {
+  type CrudPostResponse implements MutationResponse {
     success: Boolean!
     message: String!
-    data: Picture
+    data: Post!
   }
 
-  type DeletePictureResponse implements MutationResponse {
+  type CrudCommentResponse implements MutationResponse {
     success: Boolean!
     message: String!
+    data: Comment
   }
 `;

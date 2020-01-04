@@ -1,104 +1,61 @@
 "use strict";
-var __rest = (this && this.__rest) || function (s, e) {
-    var t = {};
-    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
-        t[p] = s[p];
-    if (s != null && typeof Object.getOwnPropertySymbols === "function")
-        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
-                t[p[i]] = s[p[i]];
-        }
-    return t;
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 var models_1 = require("../models");
-var picture_1 = require("./picture");
-var key = models_1.MODEL_TYPES.Users;
+var media_1 = require("./media");
 exports.userFields = {
     User: {
-        friends: function (user, _args, ctx) {
-            return user.friends_ids.map(function (friendId) {
-                return exports.userQueries.user({}, { id: friendId }, ctx);
-            });
-        },
-        profile_picture: function (user, _args, ctx) {
-            if (!user.profile_picture_id) {
+        media: function (user, _args, ctx) {
+            if (!user.media_id)
                 return {};
-            }
-            return picture_1.pictureQueries.picture({}, { id: user.profile_picture_id }, ctx);
+            return media_1.mediaQueries.media({}, { id: user.media_id }, ctx);
         }
     }
 };
 exports.userQueries = {
-    /** Gets a single User by its id */
-    user: function (_root, _a, _b) {
+    user: function (_, _a, _b) {
         var id = _a.id;
         var db = _b.db;
         return db
-            .get(key)
+            .get(models_1.MODEL_TYPES.User)
             .find({ id: id })
-            .value();
-    },
-    /** Gets all friends of a User */
-    userFriends: function (_root, _a, _b) {
-        var userId = _a.userId;
-        var db = _b.db;
-        var user = db
-            .get(key)
-            .find({ id: userId })
-            .value();
-        return db
-            .get(key)
-            .filter(function (_a) {
-            var id = _a.id;
-            return user.friends_ids.includes(id);
-        })
             .value();
     }
 };
 exports.userMutations = {
-    /** Creates a new User */
-    addUser: function (_root, _a, ctx) {
+    createUser: function (_, _a, ctx) {
         var input = _a.input;
-        var db = ctx.db, generateId = ctx.generateId, getMutationResult = ctx.getMutationResult;
+        var db = ctx.db, mutationResult = ctx.mutationResult, generateId = ctx.generateId;
         var email = input.email, password = input.password, name = input.name;
-        var newUser = {
-            email: email,
-            password: password,
-            name: name,
-            id: generateId(key),
-            description: '',
-            profile_picture_id: null,
-            friends_ids: []
-        };
-        db.get(key)
-            .push(newUser)
+        var userData = { id: generateId(models_1.MODEL_TYPES.User), email: email, password: password, name: name, media_id: null };
+        db.get(models_1.MODEL_TYPES.User)
+            .push(userData)
             .write();
-        return getMutationResult(true, 'User succesfully created!', newUser);
+        delete userData.password;
+        return mutationResult(true, 'User successfully created!', userData);
     },
-    /** Updates a User */
-    updateUser: function (_root, _a, ctx) {
+    updateUser: function (_, _a, ctx) {
         var input = _a.input;
-        var db = ctx.db, getMutationResult = ctx.getMutationResult;
-        var id = input.id, data = __rest(input, ["id"]);
-        var user = db.get(key).find({ id: id });
-        if (!user.value()) {
-            return getMutationResult(false, 'User not found!', {});
+        var db = ctx.db, mutationResult = ctx.mutationResult, generateId = ctx.generateId;
+        var id = input.id, name = input.name, mediaSource = input.mediaSource;
+        var user = db.get(models_1.MODEL_TYPES.User).find({ id: id });
+        var userData = { name: name };
+        if (mediaSource) {
+            var currentMediaId = user.value().media_id;
+            if (currentMediaId) {
+                db.get(models_1.MODEL_TYPES.Media)
+                    .find()
+                    .assign({ source: mediaSource })
+                    .write();
+            }
+            else {
+                var mediaId = generateId(models_1.MODEL_TYPES.Media);
+                db.get(models_1.MODEL_TYPES.Media)
+                    .push({ id: mediaId, user_id: id, source: mediaSource })
+                    .write();
+                userData.media_id = mediaId;
+            }
         }
-        var updatedUser = user.assign(data);
-        updatedUser.write();
-        return getMutationResult(true, 'User succesfully updated!', updatedUser.value());
-    },
-    /** Deletes a User */
-    deleteUser: function (_root, _a, ctx) {
-        var input = _a.input;
-        var db = ctx.db, getMutationResult = ctx.getMutationResult;
-        var id = input.id;
-        var users = db.get(key);
-        if (!users.find({ id: id }).value()) {
-            return getMutationResult(false, 'User not found!', {});
-        }
-        users.remove({ id: id }).write();
-        return getMutationResult(true, 'User succesfully deleted!', {});
+        user.assign(userData).write();
+        return mutationResult(true, 'User successfully updated!', user.value());
     }
 };

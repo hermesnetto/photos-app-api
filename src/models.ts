@@ -1,96 +1,103 @@
 import { LowdbSync } from 'lowdb';
 
-/** Database related types */
-export enum MODEL_TYPES {
-  Users = 'users',
-  Pictures = 'pictures',
-  Posts = 'posts',
-  Comments = 'comments'
+/**
+ * GraphQl Schema Types
+ */
+export interface GqlMedia {
+  id: number;
+  source: string;
+  author?: GqlUser;
 }
 
-export interface User {
+export interface GqlUser {
   id: number;
   email: string;
-  password: string;
   name: string;
-  description: string;
-  profile_picture_id: number | null;
-  friends_ids: number[];
+  media?: GqlMedia;
 }
 
-export interface Picture {
+export interface GqlPost {
+  id: number;
+  title: string;
+  author?: GqlUser;
+  medias?: GqlMedia[];
+}
+
+export interface GqlComment {
+  id: number;
+  body: string;
+  author?: GqlUser;
+}
+
+/**
+ * Database Schema Types
+ */
+export interface DBMedia {
   id: number;
   source: string;
   user_id: number;
 }
 
-export interface Post {
+export interface DBUser {
   id: number;
-  title: string;
-  picture_id: number;
-  user_id: number;
-  likes_ids: number[];
-  comments_ids: number[];
+  email: string;
+  password: string;
+  name: string;
+  media_id: number | null;
 }
 
-export interface Comment {
+export interface DBPost {
+  id: number;
+  title: string;
+  user_id: number;
+}
+
+export interface DBComment {
   id: number;
   body: string;
-  post_id: number;
   user_id: number;
+  post_id: number;
+}
+
+export interface DBPostMedia {
+  id: number;
+  user_id: number;
+  post_id: number;
+  media_id: number;
+}
+
+/**
+ * Database Related Types
+ */
+export enum MODEL_TYPES {
+  User = 'users',
+  Media = 'medias',
+  Post = 'posts',
+  Comment = 'comments',
+  PostMedia = 'postMedias'
 }
 
 export interface DBSchema {
-  users: User[];
-  posts: Post[];
-  pictures: Picture[];
-  comments: Comment[];
-}
-
-/** GraphQL related types */
-export interface GqlUser {
-  id?: number;
-  email?: string;
-  password?: string;
-  user?: User;
-  name?: string;
-  description?: string;
-  profile_picture?: GqlPicture;
-  friends?: GqlUser[];
-}
-
-export interface GqlPicture {
-  id?: number;
-  source?: string;
-  author?: GqlUser;
-}
-
-export interface GqlPost {
-  id?: number;
-  title?: string;
-  picture?: GqlPicture;
-  author?: GqlUser;
-  likes?: [GqlUser];
-  comments?: [GqlComment];
-}
-
-export interface GqlComment {
-  id?: number;
-  body?: string;
-  post?: Post;
-  author?: GqlUser;
-}
-
-export interface Context {
-  db: LowdbSync<DBSchema>;
-  generateId: (type: MODEL_TYPES) => number;
-  getMutationResult<T>(status: boolean, message: string, data: T): MutationResult<T>;
+  users: DBUser[];
+  medias: DBMedia[];
+  posts: DBPost[];
+  postMedias: DBPostMedia[];
+  comments: DBComment[];
 }
 
 export type DB = LowdbSync<DBSchema>;
 
+/**
+ * GraphQl Related Types
+ */
+export interface Context {
+  db: LowdbSync<DBSchema>;
+  generateId: (type: MODEL_TYPES) => number;
+  mutationResult<T>(success: boolean, message: string, data: T): MutationResult<T>;
+}
+
 export interface MutationResult<T> {
-  status: boolean;
+  success: boolean;
   message: string;
-  data: T;
+  data: T | null;
 }

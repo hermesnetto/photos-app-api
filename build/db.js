@@ -11,8 +11,9 @@ exports.getDBInstance = function () {
     var defaultDb = {
         users: [],
         posts: [],
-        pictures: [],
-        comments: []
+        medias: [],
+        comments: [],
+        postMedias: []
     };
     db.defaults(defaultDb).write();
     return db;
