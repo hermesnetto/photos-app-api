@@ -1,21 +1,7 @@
 {
-  "users": [
-    {
-      "id": 1,
-      "email": "john@mail.com",
-      "password": "123abc",
-      "media_id": 1
-    }
-  ],
+  "users": [],
   "posts": [],
   "medias": [],
-  "comments": [
-    {
-      "id": 1,
-      "user_id": 1,
-      "body": "saudades praia:/",
-      "post_id": 1
-    }
-  ],
+  "comments": [],
   "postMedias": []
 }

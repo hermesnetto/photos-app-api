@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var models_1 = require("../models");
 var media_1 = require("./media");
 var comment_1 = require("./comment");
+var user_1 = require("./user");
 exports.postFields = {
     Post: {
         medias: function (post, _args, ctx) {
@@ -21,6 +22,9 @@ exports.postFields = {
         },
         comments: function (post, _args, ctx) {
             return comment_1.commentQueries.commentsByPost({}, { postId: post.id }, ctx);
+        },
+        user: function (post, _args, ctx) {
+            return user_1.userQueries.user({}, { id: post.user_id }, ctx);
         }
     }
 };
@@ -33,12 +37,22 @@ exports.postQueries = {
             .find({ id: id })
             .value();
     },
-    postsByUser: function (_, _a, _b) {
-        var authorId = _a.authorId;
-        var db = _b.db;
+    posts: function (_, _args, _a) {
+        var db = _a.db;
+        /** @TODO Instead of reverse, should paginate and use timestamps */
         return db
             .get(models_1.MODEL_TYPES.Post)
-            .filter({ user_id: authorId })
+            .reverse()
+            .value();
+    },
+    postsByUser: function (_, _a, _b) {
+        var userId = _a.userId;
+        var db = _b.db;
+        /** @TODO Instead of reverse, should paginate and use timestamps */
+        return db
+            .get(models_1.MODEL_TYPES.Post)
+            .filter({ user_id: userId })
+            .reverse()
             .value();
     }
 };

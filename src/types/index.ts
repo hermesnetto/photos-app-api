@@ -1,6 +1,12 @@
 import { gql } from 'apollo-server';
 
 export const typeDefs = gql`
+  type File {
+    name: String!
+    type: String!
+    uri: String!
+  }
+
   type User {
     id: Int
     email: String!
@@ -11,13 +17,13 @@ export const typeDefs = gql`
   type Media {
     id: Int
     source: String!
-    author: User!
+    user: User!
   }
 
   type Post {
     id: Int
     title: String
-    author: User!
+    user: User!
     medias: [Media]!
     comments: [Comment]
   }
@@ -25,11 +31,12 @@ export const typeDefs = gql`
   type Comment {
     id: Int
     body: String!
-    author: User!
+    user: User!
   }
 
   type Query {
     # user
+    me: User
     user(id: Int!): User
 
     # media
@@ -37,7 +44,8 @@ export const typeDefs = gql`
 
     # post
     post(id: Int!): Post
-    postsByUser(authorId: Int!): [Post]
+    posts: [Post]
+    postsByUser(userId: Int!): [Post]
 
     # comment
     commentsByPost(postId: Int!): [Comment]
@@ -55,6 +63,13 @@ export const typeDefs = gql`
     # comment
     createComment(input: CreateCommentInput): CrudCommentResponse
     deleteComment(input: DeleteDefaultInput): DeleteDefaultResponse
+
+    # media
+    uploadMedia(file: Upload!): Up
+  }
+
+  type Up {
+    ok: Boolean
   }
 
   # Interfaces

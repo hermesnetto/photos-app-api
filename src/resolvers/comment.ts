@@ -21,7 +21,7 @@ interface GetCommentsByPostParams {
 
 export const commentFields = {
   Comment: {
-    author(comment: DBComment, _args: {}, ctx: Context): GqlUser {
+    user(comment: DBComment, _args: {}, ctx: Context): GqlUser {
       return userQueries.user({}, { id: comment.user_id }, ctx);
     }
   }

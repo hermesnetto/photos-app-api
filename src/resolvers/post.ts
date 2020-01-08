@@ -7,11 +7,13 @@ import {
   GqlPost,
   DBPostMedia,
   GqlComment,
-  DBComment
+  DBComment,
+  GqlUser
 } from '../models';
 
 import { mediaQueries } from './media';
 import { commentQueries } from './comment';
+import { userQueries } from './user';
 
 interface CreatePostParams {
   input: {
@@ -32,7 +34,7 @@ interface DeletePostParams {
 }
 
 interface GetPostsByUserParams {
-  authorId: number;
+  userId: number;
 }
 
 export const postFields = {
@@ -54,6 +56,10 @@ export const postFields = {
 
     comments(post: DBPost, _args: {}, ctx: Context): GqlComment[] {
       return commentQueries.commentsByPost({}, { postId: post.id }, ctx);
+    },
+
+    user(post: DBPost, _args: {}, ctx: Context): GqlUser {
+      return userQueries.user({}, { id: post.user_id }, ctx);
     }
   }
 };
@@ -66,10 +72,20 @@ export const postQueries = {
       .value();
   },
 
-  postsByUser(_: {}, { authorId }: GetPostsByUserParams, { db }: Context): GqlPost[] {
+  posts(_: {}, _args: {}, { db }: Context): GqlPost[] {
+    /** @TODO Instead of reverse, should paginate and use timestamps */
     return db
       .get(MODEL_TYPES.Post)
-      .filter({ user_id: authorId })
+      .reverse()
+      .value();
+  },
+
+  postsByUser(_: {}, { userId }: GetPostsByUserParams, { db }: Context): GqlPost[] {
+    /** @TODO Instead of reverse, should paginate and use timestamps */
+    return db
+      .get(MODEL_TYPES.Post)
+      .filter({ user_id: userId })
+      .reverse()
       .value();
   }
 };

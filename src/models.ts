@@ -92,6 +92,10 @@ export type DB = LowdbSync<DBSchema>;
  */
 export interface Context {
   db: LowdbSync<DBSchema>;
+  user?: {
+    id: number;
+    email: string;
+  };
   generateId: (type: MODEL_TYPES) => number;
   mutationResult<T>(success: boolean, message: string, data: T): MutationResult<T>;
 }

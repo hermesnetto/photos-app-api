@@ -1,5 +1,5 @@
 import { userQueries, userFields, userMutations } from './user';
-import { mediaQueries, mediaFields } from './media';
+import { mediaQueries, mediaFields, mediaMutations } from './media';
 import { postQueries, postFields, postMutations } from './post';
 import { commentQueries, commentFields, commentMutations } from './comment';
 
@@ -13,7 +13,8 @@ export const resolvers = {
   Mutation: {
     ...userMutations,
     ...postMutations,
-    ...commentMutations
+    ...commentMutations,
+    ...mediaMutations
   },
   MutationResponse: {
     __resolveType(): null {

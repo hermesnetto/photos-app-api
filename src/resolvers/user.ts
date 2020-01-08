@@ -1,5 +1,22 @@
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcryptjs';
 import { Context, MODEL_TYPES, MutationResult, DBUser, GqlUser, GqlMedia } from '../models';
+
 import { mediaQueries } from './media';
+
+const compareHash = (hash, password) => {
+  return bcrypt.compare(hash, password);
+};
+
+const hashPassword = async password => {
+  return await bcrypt.hash(password, 8);
+};
+
+const generateToken = id => {
+  return jwt.sign({ id }, 'secret!', {
+    expiresIn: 86400
+  });
+};
 
 interface CreateUserParams {
   input: {
@@ -36,6 +53,15 @@ export const userFields = {
 };
 
 export const userQueries = {
+  me(_: {}, _args: {}, { db, user }: Context): GqlUser | null {
+    if (!user) return null;
+
+    return db
+      .get(MODEL_TYPES.User)
+      .find({ id: user.id })
+      .value();
+  },
+
   user(_: {}, { id }: GetUserParams, { db }: Context): GqlUser {
     return db
       .get(MODEL_TYPES.User)
@@ -45,12 +71,23 @@ export const userQueries = {
 };
 
 export const userMutations = {
-  createUser(_: {}, { input }: CreateUserParams, ctx: Context): MutationResult<GqlUser> {
+  createUser: async (
+    _: {},
+    { input }: CreateUserParams,
+    ctx: Context
+  ): Promise<MutationResult<GqlUser>> => {
     const { db, mutationResult, generateId } = ctx;
     const { email, password, name } = input;
 
-    const userData = { id: generateId(MODEL_TYPES.User), email, password, name, media_id: null };
+    const userData = {
+      id: generateId(MODEL_TYPES.User),
+      password: await hashPassword(password),
+      email,
+      name,
+      media_id: null
+    };
 
+    /** @TODO Adds a default image for every new user */
     db.get(MODEL_TYPES.User)
       .push(userData)
       .write();

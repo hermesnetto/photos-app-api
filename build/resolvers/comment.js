@@ -4,7 +4,7 @@ var models_1 = require("../models");
 var user_1 = require("./user");
 exports.commentFields = {
     Comment: {
-        author: function (comment, _args, ctx) {
+        user: function (comment, _args, ctx) {
             return user_1.userQueries.user({}, { id: comment.user_id }, ctx);
         }
     }

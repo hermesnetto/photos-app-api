@@ -12,7 +12,7 @@ export interface GqlMedia {
 
 export const mediaFields = {
   Media: {
-    author(media: DBMedia, _args: {}, ctx: Context): GqlUser {
+    user(media: DBMedia, _args: {}, ctx: Context): GqlUser {
       return userQueries.user({}, { id: media.user_id }, ctx);
     }
   }
@@ -27,4 +27,40 @@ export const mediaQueries = {
   }
 };
 
-export const mediaMutations = {};
+export const mediaMutations = {
+  uploadMedia: (_, { file: { _parts } }) => {
+    _parts.forEach(([name, file]) => {
+      try {
+        cloudinary.uploader.upload(file.uri, {}, (error, result) => {
+          console.log(error, result);
+        });
+
+        // const result = await new Promise((resolve, reject) => {
+        //   createReadStream().pipe(
+        //     cloudinary.uploader.upload_stream((error, result) => {
+        //       if (error) {
+        //         reject(error);
+        //       }
+
+        //       resolve(result);
+        //     })
+        //   );
+        // });
+
+        // const newPicture = { filename, path: result.secure_url };
+
+        // console.log(newPicture);
+
+        // photos.push(newPicture)
+
+        // return newPicture;
+      } catch (err) {
+        console.log(err);
+      }
+    });
+
+    return { ok: true };
+
+    // const { filename, createReadStream } = await file;
+  }
+};
