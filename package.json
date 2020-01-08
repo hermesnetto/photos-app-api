@@ -6,7 +6,10 @@
   "scripts": {
     "start:build": "tsc -w",
     "start:run": "nodemon build/index.js --ignore db.json",
-    "start": "concurrently npm:start:*"
+    "_start": "concurrently npm:start:*",
+    "prod:build": "tsc --build",
+    "prod:run": "nodemon build/index.js --ignore db.json",
+    "start": "concurrently npm:prod:*"
   },
   "author": "",
   "license": "ISC",
